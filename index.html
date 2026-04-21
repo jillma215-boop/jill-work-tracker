@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
@@ -6,503 +6,875 @@
   <title>業務管理 / Work Tracker</title>
   <style>
     :root {
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --primary: #111827;
-      --red-bg: #fef2f2;
-      --red: #b91c1c;
-      --blue-bg: #eff6ff;
-      --blue: #1d4ed8;
-      --amber-bg: #fffbeb;
-      --amber: #b45309;
-      --green-bg: #f0fdf4;
-      --green: #15803d;
-      --gray-bg: #f1f5f9;
-      --gray: #475569;
-      --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      --radius: 18px;
+      --bg-top: #f8fafc;
+      --bg-mid: #f2f7f6;
+      --bg-bottom: #faf7f0;
+
+      --card: rgba(255, 255, 255, 0.92);
+      --card-border: #dfe7e5;
+      --card-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+
+      --text-main: #334155;
+      --text-sub: #64748b;
+      --text-soft: #94a3b8;
+
+      --primary: #4f8f87;
+      --primary-hover: #3f7770;
+      --primary-soft: #e9f4f2;
+
+      --line: #e2e8f0;
+      --danger: #e57373;
+      --danger-bg: #fff1f1;
+
+      --badge-gray-bg: #f8fafc;
+      --badge-gray-text: #5b6470;
+      --badge-teal-bg: #edf7f5;
+      --badge-teal-text: #467c75;
+      --badge-amber-bg: #fff7e9;
+      --badge-amber-text: #a07a2f;
+      --badge-rose-bg: #fff1f1;
+      --badge-rose-text: #c15d5d;
+
+      --todo-bg: #f8fafc;
+      --todo-text: #64748b;
+
+      --doing-bg: #edf7f5;
+      --doing-text: #467c75;
+
+      --waiting-bg: #fff7e9;
+      --waiting-text: #a07a2f;
+
+      --follow-bg: #fff1f1;
+      --follow-text: #c15d5d;
+
+      --done-bg: #eef8ef;
+      --done-text: #5d8a63;
+
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN",
+        "Yu Gothic", sans-serif;
+      color: var(--text-main);
+      background: linear-gradient(to bottom, var(--bg-top), var(--bg-mid), var(--bg-bottom));
+      min-height: 100vh;
     }
-    .container {
-      max-width: 1120px;
+
+    .page {
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 32px 20px 60px;
     }
+
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
       margin-bottom: 20px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      color: var(--text-main);
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+
+    .toolbar,
+    .stats,
+    .form-grid,
+    .list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar {
+      grid-template-columns: 1.4fr 180px 180px 180px;
+      margin-bottom: 18px;
+    }
+
+    .stats {
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 18px;
+    }
+
+    .stat-card,
+    .panel,
+    .task-card,
+    .modal-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--card-shadow);
+    }
+
+    .stat-card {
+      padding: 18px 18px 16px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .panel {
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .panel-row {
+      display: flex;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    h1 { margin: 0; font-size: 32px; }
-    .subtitle { color: var(--muted); margin-top: 8px; }
-    .toolbar, .stats, .filters, .cards { display: grid; gap: 16px; }
-    .toolbar { grid-template-columns: 1fr auto auto auto; align-items: center; margin-bottom: 20px; }
-    .stats { grid-template-columns: repeat(4, 1fr); margin-bottom: 20px; }
-    .filters { grid-template-columns: 1fr 220px 220px; margin-bottom: 20px; }
-    .cards { grid-template-columns: repeat(2, 1fr); }
-    .card, .stat, .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .stat { padding: 18px 20px; }
-    .stat .label { color: var(--muted); font-size: 14px; }
-    .stat .value { font-size: 28px; font-weight: 700; margin-top: 8px; }
-    .panel { padding: 16px; }
-    input, select, textarea, button {
-      font: inherit;
-    }
-    input, select, textarea {
+
+    input,
+    textarea,
+    select {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: white;
-      color: var(--text);
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius-md);
+      padding: 11px 13px;
+      font-size: 14px;
+      color: var(--text-main);
+      outline: none;
     }
-    textarea { min-height: 92px; resize: vertical; }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-soft);
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #a7c9c3;
+      box-shadow: 0 0 0 4px rgba(79, 143, 135, 0.08);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 92px;
+      line-height: 1.6;
+    }
+
     button {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: white;
-      color: var(--text);
-      padding: 12px 16px;
+      border: none;
+      border-radius: 16px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 600;
       cursor: pointer;
+      transition: 0.18s ease;
     }
-    button.primary {
+
+    .btn-primary {
       background: var(--primary);
       color: white;
-      border-color: var(--primary);
     }
-    .card {
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--text-main);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      background: #fafafa;
+    }
+
+    .btn-danger {
+      background: #fff;
+      color: var(--danger);
+      border: 1px solid #f4cccc;
+    }
+
+    .btn-danger:hover {
+      background: #fff8f8;
+    }
+
+    .list {
+      grid-template-columns: 1fr;
+    }
+
+    .task-card {
       padding: 18px;
-      display: grid;
-      gap: 12px;
-      cursor: pointer;
+      transition: 0.18s ease;
     }
-    .card.overdue {
-      border-color: #fca5a5;
-      background: linear-gradient(180deg, #fff, #fff7f7);
+
+    .task-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }
-    .card-head {
+
+    .task-card.overdue {
+      border-color: #efb0b0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,248,248,0.95));
+    }
+
+    .task-top {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
       align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 12px;
     }
-    .title { font-size: 18px; font-weight: 700; }
-    .meta { color: var(--muted); font-size: 12px; }
-    .row { font-size: 14px; line-height: 1.6; }
-    .row b { color: var(--gray); }
-    .badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .task-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .task-date {
+      color: var(--text-soft);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
     .badge {
       display: inline-flex;
       align-items: center;
+      gap: 6px;
       border-radius: 999px;
       padding: 6px 10px;
       font-size: 12px;
-      border: 1px solid transparent;
       font-weight: 600;
+      border: 1px solid transparent;
     }
-    .todo { background: var(--gray-bg); color: var(--gray); }
-    .doing { background: var(--blue-bg); color: var(--blue); }
-    .waiting { background: var(--amber-bg); color: var(--amber); }
-    .follow { background: #fff1f2; color: #be123c; }
-    .done { background: var(--green-bg); color: var(--green); }
-    .p1 { background: #fff1f2; color: #be123c; }
-    .p2 { background: #fff7ed; color: #c2410c; }
-    .p3 { background: var(--gray-bg); color: var(--gray); }
-    .overdue-badge { background: var(--red-bg); color: var(--red); }
+
+    .badge.category {
+      background: var(--badge-teal-bg);
+      color: var(--badge-teal-text);
+      border-color: #d8ece8;
+    }
+
+    .badge.priority {
+      background: var(--badge-amber-bg);
+      color: var(--badge-amber-text);
+      border-color: #f2e4c0;
+    }
+
+    .badge.overdue {
+      background: var(--badge-rose-bg);
+      color: var(--badge-rose-text);
+      border-color: #f1d2d2;
+    }
+
+    .badge.todo { background: var(--todo-bg); color: var(--todo-text); border-color: #e5e7eb; }
+    .badge.doing { background: var(--doing-bg); color: var(--doing-text); border-color: #d7ebe7; }
+    .badge.waiting { background: var(--waiting-bg); color: var(--waiting-text); border-color: #f2e4c0; }
+    .badge.follow { background: var(--follow-bg); color: var(--follow-text); border-color: #f1d2d2; }
+    .badge.done { background: var(--done-bg); color: var(--done-text); border-color: #dcebdc; }
+
+    .task-body {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .field-label {
+      color: var(--text-sub);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .empty {
       text-align: center;
-      color: var(--muted);
-      padding: 56px 16px;
-      background: white;
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
+      color: var(--text-sub);
+      padding: 42px 16px;
+      background: rgba(255,255,255,0.7);
+      border: 1px dashed #d7dfdf;
+      border-radius: var(--radius-xl);
     }
-    dialog {
-      border: none;
-      border-radius: 24px;
-      box-shadow: 0 20px 40px rgba(15,23,42,.16);
-      width: min(760px, calc(100vw - 24px));
-      padding: 0;
+
+    .quick-filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
-    dialog::backdrop { background: rgba(15,23,42,.45); }
-    .modal { padding: 20px; }
-    .modal h2 { margin: 0 0 16px 0; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .span-2 { grid-column: 1 / -1; }
-    .actions { display: flex; justify-content: space-between; gap: 12px; margin-top: 16px; }
-    .small { font-size: 12px; color: var(--muted); }
-    .danger { color: #b91c1c; }
-    @media (max-width: 860px) {
-      .toolbar, .stats, .filters, .cards, .form-grid { grid-template-columns: 1fr; }
-      .actions { flex-direction: column; }
+
+    .quick-pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text-sub);
+      cursor: pointer;
+    }
+
+    .quick-pill.active {
+      background: var(--primary-soft);
+      color: var(--primary-hover);
+      border-color: #d6ebe8;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.25);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(760px, 100%);
+      padding: 20px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.98), rgba(250,247,240,0.98));
+    }
+
+    .modal-title {
+      margin: 0 0 16px;
+      font-size: 22px;
+      color: var(--text-main);
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .toolbar,
+      .stats,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .task-top {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="page">
     <div class="header">
-      <div>
-        <h1>業務管理 / Work Tracker</h1>
-        <div class="subtitle">予定・実績・次アクションをひとつにまとめる、フォロー重視の仕事管理ツール。</div>
+      <h1 class="title">業務管理 / Work Tracker</h1>
+      <div class="subtitle">やさしいグレーグリーンで、日々の業務を整理・追跡・フォロー。</div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <input id="searchInput" placeholder="検索 / Search" />
+        <select id="categoryFilter">
+          <option value="all">全分類 / All Categories</option>
+        </select>
+        <select id="statusFilter">
+          <option value="all">全状態 / All Status</option>
+        </select>
+        <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
+      </div>
+
+      <div class="quick-filters">
+        <button class="quick-pill active" data-view="today">今日優先 / Today Focus</button>
+        <button class="quick-pill" data-view="all">全体表示 / All Tasks</button>
+        <button class="quick-pill" data-view="follow">要フォロー / Follow Up</button>
+        <button class="quick-pill" data-view="waiting">先方待ち / Waiting</button>
+        <button class="quick-pill" data-view="overdue">遅延 / Overdue</button>
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat"><div class="label">今日 / Today</div><div class="value" id="statToday">0</div></div>
-      <div class="stat"><div class="label">完了 / Done</div><div class="value" id="statDone">0</div></div>
-      <div class="stat"><div class="label">要フォロー / Follow Up</div><div class="value" id="statFollow">0</div></div>
-      <div class="stat"><div class="label">遅延 / Overdue</div><div class="value" id="statOverdue">0</div></div>
-    </div>
-
-    <div class="toolbar">
-      <input id="searchInput" placeholder="検索 / Search" />
-      <button id="todayToggle">今日優先 / Today Focus</button>
-      <button id="seedBtn">サンプル追加 / Load Sample</button>
-      <button class="primary" id="newBtn">追加 / Add</button>
-    </div>
-
-    <div class="filters">
-      <select id="categoryFilter">
-        <option value="all">全部門 / All Categories</option>
-        <option value="cs">CS / Customer Support</option>
-        <option value="juku">塾 / Client (School)</option>
-        <option value="finance">財務 / Finance</option>
-        <option value="admin">管理 / Admin</option>
-        <option value="urgent">臨時 / Urgent</option>
-      </select>
-      <select id="statusFilter">
-        <option value="all">全ステータス / All Statuses</option>
-        <option value="todo">未着手 / To Do</option>
-        <option value="doing">対応中 / In Progress</option>
-        <option value="waiting">先方待ち / Waiting</option>
-        <option value="follow">要フォロー / Follow Up</option>
-        <option value="done">完了 / Done</option>
-      </select>
-      <select id="priorityFilter">
-        <option value="all">全優先度 / All Priorities</option>
-        <option value="p1">高 / High</option>
-        <option value="p2">中 / Medium</option>
-        <option value="p3">低 / Low</option>
-      </select>
-    </div>
-
-    <div id="cards" class="cards"></div>
+    <div class="list" id="taskList"></div>
   </div>
 
-  <dialog id="taskDialog">
-    <div class="modal">
-      <h2 id="dialogTitle">新規タスク / New Task</h2>
+  <div class="modal" id="taskModal">
+    <div class="modal-card">
+      <h2 class="modal-title" id="modalTitle">新規タスク / New Task</h2>
+
       <div class="form-grid">
         <div>
-          <label class="small">日付 / Date</label>
-          <input type="date" id="fDate" />
+          <label class="section-label">日付 / Date</label>
+          <input type="date" id="taskDate" />
         </div>
+
         <div>
-          <label class="small">分類 / Category</label>
-          <select id="fCategory">
-            <option value="cs">CS / Customer Support</option>
-            <option value="juku">塾 / Client (School)</option>
-            <option value="finance">財務 / Finance</option>
-            <option value="admin">管理 / Admin</option>
-            <option value="urgent">臨時 / Urgent</option>
-          </select>
+          <label class="section-label">分類 / Category</label>
+          <select id="taskCategory"></select>
         </div>
-        <div class="span-2">
-          <label class="small">タイトル / Title</label>
-          <input id="fTitle" placeholder="例：先生報酬振込確認" />
+
+        <div class="full">
+          <label class="section-label">タイトル / Title</label>
+          <input id="taskTitle" placeholder="例：Base数理塾 契約開始日確認" />
         </div>
-        <div class="span-2">
-          <label class="small">予定 / Plan</label>
-          <textarea id="fPlan" placeholder="今日何を進めるか"></textarea>
-        </div>
-        <div class="span-2">
-          <label class="small">実績 / Actual</label>
-          <textarea id="fActual" placeholder="実際に何をしたか"></textarea>
-        </div>
-        <div class="span-2">
-          <label class="small">次アクション / Next</label>
-          <textarea id="fNext" placeholder="例：2026-05-02 相手へ再連絡"></textarea>
-        </div>
+
         <div>
-          <label class="small">ステータス / Status</label>
-          <select id="fStatus">
-            <option value="todo">未着手 / To Do</option>
-            <option value="doing">対応中 / In Progress</option>
-            <option value="waiting">先方待ち / Waiting</option>
-            <option value="follow">要フォロー / Follow Up</option>
-            <option value="done">完了 / Done</option>
-          </select>
+          <label class="section-label">状態 / Status</label>
+          <select id="taskStatus"></select>
         </div>
+
         <div>
-          <label class="small">優先度 / Priority</label>
-          <select id="fPriority">
-            <option value="p1">高 / High</option>
-            <option value="p2">中 / Medium</option>
-            <option value="p3">低 / Low</option>
-          </select>
+          <label class="section-label">優先度 / Priority</label>
+          <select id="taskPriority"></select>
+        </div>
+
+        <div class="full">
+          <label class="section-label">予定 / Plan</label>
+          <textarea id="taskPlan" placeholder="今日予定していること"></textarea>
+        </div>
+
+        <div class="full">
+          <label class="section-label">実績 / Actual</label>
+          <textarea id="taskActual" placeholder="実際に対応した内容"></textarea>
+        </div>
+
+        <div class="full">
+          <label class="section-label">次アクション / Next</label>
+          <textarea id="taskNext" placeholder="例：2026-05-02 再連絡、先方返信待ち"></textarea>
         </div>
       </div>
-      <div class="actions">
-        <div>
-          <button id="deleteBtn" class="danger" style="display:none;">削除 / Delete</button>
-        </div>
-        <div style="display:flex; gap:12px;">
-          <button id="cancelBtn">キャンセル / Cancel</button>
-          <button id="saveBtn" class="primary">保存 / Save</button>
-        </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" id="cancelBtn">キャンセル / Cancel</button>
+        <button class="btn-primary" id="saveBtn">保存 / Save</button>
       </div>
     </div>
-  </dialog>
+  </div>
 
   <script>
-    const STORAGE_KEY = 'work-tracker-static-v1';
-    const today = () => new Date().toISOString().slice(0, 10);
-    const $ = (id) => document.getElementById(id);
+    const STORAGE_KEY = "work_tracker_full_v2";
 
-    const labels = {
-      category: {
-        cs: 'CS / Customer Support',
-        juku: '塾 / Client (School)',
-        finance: '財務 / Finance',
-        admin: '管理 / Admin',
-        urgent: '臨時 / Urgent',
-      },
-      status: {
-        todo: '未着手 / To Do',
-        doing: '対応中 / In Progress',
-        waiting: '先方待ち / Waiting',
-        follow: '要フォロー / Follow Up',
-        done: '完了 / Done',
-      },
-      priority: {
-        p1: '高 / High',
-        p2: '中 / Medium',
-        p3: '低 / Low',
-      }
-    };
-
-    const seedTasks = [
-      { id: Date.now() + 1, date: today(), category: 'cs', title: '森田先生件フォロー', plan: '返信状況を確認し、必要に応じて再連絡', actual: '確認待ち', next: today() + ' 保護者対応の進捗確認', status: 'follow', priority: 'p1' },
-      { id: Date.now() + 2, date: today(), category: 'juku', title: 'Base数理塾 契約確認', plan: '開始日の確認と契約準備', actual: '利用規約送付済み', next: today() + ' 開始日確認', status: 'waiting', priority: 'p1' },
-      { id: Date.now() + 3, date: today(), category: 'finance', title: '報酬振込データ整理', plan: '振込対象と金額の最終確認', actual: '', next: '2026-05-02 振込処理', status: 'doing', priority: 'p2' }
+    const categories = [
+      { value: "cs", label: "CS / Customer Support" },
+      { value: "school", label: "塾 / Client (School)" },
+      { value: "finance", label: "財務 / Finance" },
+      { value: "admin", label: "管理 / Admin" },
+      { value: "urgent", label: "臨時 / Urgent" }
     ];
 
-    let tasks = [];
-    let editingId = null;
-    let todayFocus = true;
+    const statuses = [
+      { value: "todo", label: "未着手 / To Do" },
+      { value: "doing", label: "対応中 / In Progress" },
+      { value: "waiting", label: "先方待ち / Waiting" },
+      { value: "follow", label: "要フォロー / Follow Up" },
+      { value: "done", label: "完了 / Done" }
+    ];
 
-    function load() {
+    const priorities = [
+      { value: "p1", label: "高 / High" },
+      { value: "p2", label: "中 / Medium" },
+      { value: "p3", label: "低 / Low" }
+    ];
+
+    const initialTasks = [
+      {
+        id: Date.now() + 1,
+        date: new Date().toISOString().slice(0, 10),
+        category: "school",
+        title: "Base数理塾 契約開始日確認",
+        status: "waiting",
+        priority: "p1",
+        plan: "契約開始日の確認メールを送る",
+        actual: "利用規約送付済み",
+        next: "2026-05-02 先方返信待ち。返信なければ再確認",
+      },
+      {
+        id: Date.now() + 2,
+        date: new Date().toISOString().slice(0, 10),
+        category: "cs",
+        title: "先生へのフォロー連絡",
+        status: "follow",
+        priority: "p1",
+        plan: "未返信案件の再確認",
+        actual: "1件目は返信待ち、2件目は再送済み",
+        next: "2026-04-18 再フォロー",
+      }
+    ];
+
+    let tasks = loadTasks();
+    let currentEditId = null;
+    let currentView = "today";
+
+    const taskList = document.getElementById("taskList");
+    const stats = document.getElementById("stats");
+    const taskModal = document.getElementById("taskModal");
+    const modalTitle = document.getElementById("modalTitle");
+
+    const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    const taskDate = document.getElementById("taskDate");
+    const taskCategory = document.getElementById("taskCategory");
+    const taskTitle = document.getElementById("taskTitle");
+    const taskStatus = document.getElementById("taskStatus");
+    const taskPriority = document.getElementById("taskPriority");
+    const taskPlan = document.getElementById("taskPlan");
+    const taskActual = document.getElementById("taskActual");
+    const taskNext = document.getElementById("taskNext");
+
+    function loadTasks() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(initialTasks));
+        return initialTasks;
+      }
       try {
-        tasks = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        return JSON.parse(raw);
       } catch {
-        tasks = [];
+        return initialTasks;
       }
     }
 
-    function save() {
+    function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
 
-    function resetForm() {
-      $('fDate').value = today();
-      $('fCategory').value = 'cs';
-      $('fTitle').value = '';
-      $('fPlan').value = '';
-      $('fActual').value = '';
-      $('fNext').value = '';
-      $('fStatus').value = 'todo';
-      $('fPriority').value = 'p2';
-      editingId = null;
-      $('deleteBtn').style.display = 'none';
-      $('dialogTitle').textContent = '新規タスク / New Task';
+    function fillSelect(selectEl, options, includeAll = false, allText = "All") {
+      selectEl.innerHTML = "";
+      if (includeAll) {
+        const opt = document.createElement("option");
+        opt.value = "all";
+        opt.textContent = allText;
+        selectEl.appendChild(opt);
+      }
+      options.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.value;
+        opt.textContent = item.label;
+        selectEl.appendChild(opt);
+      });
+    }
+
+    fillSelect(categoryFilter, categories, true, "全分類 / All Categories");
+    fillSelect(statusFilter, statuses, true, "全状態 / All Status");
+    fillSelect(taskCategory, categories);
+    fillSelect(taskStatus, statuses);
+    fillSelect(taskPriority, priorities);
+
+    function getLabel(arr, value) {
+      const found = arr.find(x => x.value === value);
+      return found ? found.label : value;
+    }
+
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function parseDateFromNext(next) {
+      if (!next) return null;
+      const match = next.match(/\d{4}-\d{2}-\d{2}/);
+      return match ? match[0] : null;
     }
 
     function isOverdue(task) {
-      if (task.status === 'done') return false;
-      const match = (task.next || '').match(/\d{4}-\d{2}-\d{2}/);
-      if (match) return new Date(match[0]) < new Date(today());
-      return task.status === 'follow' && task.date < today();
+      if (task.status === "done") return false;
+      const nextDate = parseDateFromNext(task.next);
+      if (!nextDate) return task.status === "follow";
+      return nextDate < todayStr();
+    }
+
+    function matchesView(task) {
+      if (currentView === "all") return true;
+      if (currentView === "today") {
+        return task.date === todayStr() || task.status === "follow" || task.status === "waiting";
+      }
+      if (currentView === "follow") return task.status === "follow";
+      if (currentView === "waiting") return task.status === "waiting";
+      if (currentView === "overdue") return isOverdue(task);
+      return true;
+    }
+
+    function matchesSearch(task, keyword) {
+      if (!keyword) return true;
+      const joined = [
+        task.title,
+        task.plan,
+        task.actual,
+        task.next,
+        getLabel(categories, task.category),
+        getLabel(statuses, task.status)
+      ].join(" ").toLowerCase();
+      return joined.includes(keyword.toLowerCase());
     }
 
     function filteredTasks() {
-      const q = $('searchInput').value.trim().toLowerCase();
-      const category = $('categoryFilter').value;
-      const status = $('statusFilter').value;
-      const priority = $('priorityFilter').value;
+      const keyword = searchInput.value.trim();
+      const category = categoryFilter.value;
+      const status = statusFilter.value;
 
-      return tasks.filter(t => {
-        const text = [t.title, t.plan, t.actual, t.next].join(' ').toLowerCase();
-        const matchQ = !q || text.includes(q);
-        const matchCategory = category === 'all' || t.category === category;
-        const matchStatus = status === 'all' || t.status === status;
-        const matchPriority = priority === 'all' || t.priority === priority;
-        const matchToday = !todayFocus || t.date === today() || t.status === 'follow' || t.status === 'waiting' || isOverdue(t);
-        return matchQ && matchCategory && matchStatus && matchPriority && matchToday;
-      }).sort((a,b) => {
-        const ao = isOverdue(a) ? -1 : 0;
-        const bo = isOverdue(b) ? -1 : 0;
-        if (ao !== bo) return ao - bo;
-        return b.id - a.id;
-      });
+      return [...tasks]
+        .filter(task => matchesView(task))
+        .filter(task => category === "all" ? true : task.category === category)
+        .filter(task => status === "all" ? true : task.status === status)
+        .filter(task => matchesSearch(task, keyword))
+        .sort((a, b) => {
+          const aOver = isOverdue(a) ? 1 : 0;
+          const bOver = isOverdue(b) ? 1 : 0;
+          if (aOver !== bOver) return bOver - aOver;
+
+          const priorityOrder = { p1: 3, p2: 2, p3: 1 };
+          if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+          }
+
+          return (b.date || "").localeCompare(a.date || "");
+        });
     }
 
     function renderStats() {
-      $('statToday').textContent = tasks.filter(t => t.date === today()).length;
-      $('statDone').textContent = tasks.filter(t => t.status === 'done').length;
-      $('statFollow').textContent = tasks.filter(t => t.status === 'follow').length;
-      $('statOverdue').textContent = tasks.filter(isOverdue).length;
-      $('todayToggle').textContent = todayFocus ? '全体表示 / Show All' : '今日優先 / Today Focus';
+      const total = tasks.length;
+      const done = tasks.filter(t => t.status === "done").length;
+      const follow = tasks.filter(t => t.status === "follow").length;
+      const overdue = tasks.filter(isOverdue).length;
+
+      const statsData = [
+        { label: "全件数 / Total", value: total },
+        { label: "完了 / Done", value: done },
+        { label: "要フォロー / Follow Up", value: follow },
+        { label: "遅延 / Overdue", value: overdue }
+      ];
+
+      stats.innerHTML = statsData.map(item => `
+        <div class="stat-card">
+          <div class="stat-label">${item.label}</div>
+          <div class="stat-value">${item.value}</div>
+        </div>
+      `).join("");
     }
 
-    function badge(text, cls) {
-      return `<span class="badge ${cls}">${text}</span>`;
-    }
-
-    function render() {
-      renderStats();
+    function renderTasks() {
       const list = filteredTasks();
-      const root = $('cards');
+
       if (!list.length) {
-        root.innerHTML = '<div class="empty">表示できるタスクがありません。<br/>No tasks to show.</div>';
+        taskList.innerHTML = `<div class="empty">表示できるタスクがありません。</div>`;
         return;
       }
-      root.innerHTML = list.map(task => {
+
+      taskList.innerHTML = list.map(task => {
         const overdue = isOverdue(task);
         return `
-          <div class="card ${overdue ? 'overdue' : ''}" data-id="${task.id}">
-            <div class="card-head">
-              <div>
-                <div class="title">${escapeHtml(task.title)}</div>
-                <div class="meta">${task.date} · ${labels.category[task.category]}</div>
-              </div>
+          <div class="task-card ${overdue ? "overdue" : ""}">
+            <div class="task-top">
+              <h3 class="task-title">${escapeHtml(task.title)}</h3>
+              <div class="task-date">${escapeHtml(task.date || "-")}</div>
             </div>
-            <div class="row"><b>予定 / Plan:</b> ${escapeHtml(task.plan || '-')}</div>
-            <div class="row"><b>実績 / Actual:</b> ${escapeHtml(task.actual || '-')}</div>
-            <div class="row"><b>次アクション / Next:</b> ${escapeHtml(task.next || '-')}</div>
+
             <div class="badges">
-              ${badge(labels.status[task.status], task.status)}
-              ${badge(labels.priority[task.priority], task.priority)}
-              ${overdue ? badge('遅延 / Overdue', 'overdue-badge') : ''}
+              <span class="badge category">${escapeHtml(getLabel(categories, task.category))}</span>
+              <span class="badge ${task.status}">${escapeHtml(getLabel(statuses, task.status))}</span>
+              <span class="badge priority">${escapeHtml(getLabel(priorities, task.priority))}</span>
+              ${overdue ? `<span class="badge overdue">遅延 / Overdue</span>` : ""}
+            </div>
+
+            <div class="task-body">
+              <div><span class="field-label">予定 / Plan:</span>${escapeHtml(task.plan || "-")}</div>
+              <div><span class="field-label">実績 / Actual:</span>${escapeHtml(task.actual || "-")}</div>
+              <div><span class="field-label">次アクション / Next:</span>${escapeHtml(task.next || "-")}</div>
+            </div>
+
+            <div class="task-actions">
+              <button class="btn-secondary" onclick="openEdit(${task.id})">編集 / Edit</button>
+              <button class="btn-secondary" onclick="toggleDone(${task.id})">
+                ${task.status === "done" ? "未完了に戻す / Undo" : "完了にする / Mark Done"}
+              </button>
+              <button class="btn-danger" onclick="deleteTask(${task.id})">削除 / Delete</button>
             </div>
           </div>
         `;
-      }).join('');
+      }).join("");
+    }
 
-      root.querySelectorAll('.card').forEach(el => {
-        el.addEventListener('click', () => openEdit(Number(el.dataset.id)));
+    function renderAll() {
+      renderStats();
+      renderTasks();
+      updateViewPills();
+    }
+
+    function updateViewPills() {
+      document.querySelectorAll(".quick-pill").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.view === currentView);
       });
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;')
-        .replaceAll('\n', '<br/>');
-    }
-
     function openNew() {
-      resetForm();
-      $('taskDialog').showModal();
+      currentEditId = null;
+      modalTitle.textContent = "新規タスク / New Task";
+      taskDate.value = todayStr();
+      taskCategory.value = "cs";
+      taskTitle.value = "";
+      taskStatus.value = "todo";
+      taskPriority.value = "p2";
+      taskPlan.value = "";
+      taskActual.value = "";
+      taskNext.value = "";
+      taskModal.classList.add("show");
     }
 
     function openEdit(id) {
       const task = tasks.find(t => t.id === id);
       if (!task) return;
-      editingId = id;
-      $('dialogTitle').textContent = '編集 / Edit';
-      $('deleteBtn').style.display = 'inline-flex';
-      $('fDate').value = task.date;
-      $('fCategory').value = task.category;
-      $('fTitle').value = task.title;
-      $('fPlan').value = task.plan || '';
-      $('fActual').value = task.actual || '';
-      $('fNext').value = task.next || '';
-      $('fStatus').value = task.status;
-      $('fPriority').value = task.priority;
-      $('taskDialog').showModal();
+      currentEditId = id;
+      modalTitle.textContent = "編集 / Edit";
+      taskDate.value = task.date || todayStr();
+      taskCategory.value = task.category;
+      taskTitle.value = task.title || "";
+      taskStatus.value = task.status;
+      taskPriority.value = task.priority;
+      taskPlan.value = task.plan || "";
+      taskActual.value = task.actual || "";
+      taskNext.value = task.next || "";
+      taskModal.classList.add("show");
     }
 
-    function collectForm() {
-      return {
-        date: $('fDate').value || today(),
-        category: $('fCategory').value,
-        title: $('fTitle').value.trim(),
-        plan: $('fPlan').value.trim(),
-        actual: $('fActual').value.trim(),
-        next: $('fNext').value.trim(),
-        status: $('fStatus').value,
-        priority: $('fPriority').value,
+    function closeModal() {
+      taskModal.classList.remove("show");
+    }
+
+    function saveTask() {
+      const payload = {
+        date: taskDate.value,
+        category: taskCategory.value,
+        title: taskTitle.value.trim(),
+        status: taskStatus.value,
+        priority: taskPriority.value,
+        plan: taskPlan.value.trim(),
+        actual: taskActual.value.trim(),
+        next: taskNext.value.trim()
       };
-    }
 
-    function onSave() {
-      const payload = collectForm();
       if (!payload.title) {
-        alert('タイトル / Title は必須です。');
+        alert("タイトル / Title を入力してください。");
         return;
       }
-      if (editingId) {
-        tasks = tasks.map(t => t.id === editingId ? { ...t, ...payload } : t);
+
+      if (currentEditId) {
+        tasks = tasks.map(t => t.id === currentEditId ? { ...t, ...payload } : t);
       } else {
-        tasks.unshift({ id: Date.now(), ...payload });
+        tasks.unshift({
+          id: Date.now(),
+          ...payload
+        });
       }
-      save();
-      $('taskDialog').close();
-      render();
-      resetForm();
+
+      saveTasks();
+      closeModal();
+      renderAll();
     }
 
-    function onDelete() {
-      if (!editingId) return;
-      tasks = tasks.filter(t => t.id !== editingId);
-      save();
-      $('taskDialog').close();
-      render();
-      resetForm();
+    function toggleDone(id) {
+      tasks = tasks.map(task => {
+        if (task.id !== id) return task;
+        return {
+          ...task,
+          status: task.status === "done" ? "doing" : "done"
+        };
+      });
+      saveTasks();
+      renderAll();
     }
 
-    $('newBtn').addEventListener('click', openNew);
-    $('saveBtn').addEventListener('click', onSave);
-    $('deleteBtn').addEventListener('click', onDelete);
-    $('cancelBtn').addEventListener('click', () => { $('taskDialog').close(); resetForm(); });
-    $('todayToggle').addEventListener('click', () => { todayFocus = !todayFocus; render(); });
-    $('seedBtn').addEventListener('click', () => {
-      if (!tasks.length) {
-        tasks = seedTasks;
-      } else {
-        tasks = [...seedTasks, ...tasks];
-      }
-      save();
-      render();
-    });
-    ['searchInput', 'categoryFilter', 'statusFilter', 'priorityFilter'].forEach(id => {
-      $(id).addEventListener('input', render);
-      $(id).addEventListener('change', render);
+    function deleteTask(id) {
+      const ok = confirm("このタスクを削除しますか？");
+      if (!ok) return;
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      renderAll();
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.getElementById("newTaskBtn").addEventListener("click", openNew);
+    document.getElementById("cancelBtn").addEventListener("click", closeModal);
+    document.getElementById("saveBtn").addEventListener("click", saveTask);
+
+    searchInput.addEventListener("input", renderTasks);
+    categoryFilter.addEventListener("change", renderTasks);
+    statusFilter.addEventListener("change", renderTasks);
+
+    document.querySelectorAll(".quick-pill").forEach(btn => {
+      btn.addEventListener("click", () => {
+        currentView = btn.dataset.view;
+        renderAll();
+      });
     });
 
-    load();
-    resetForm();
-    render();
+    taskModal.addEventListener("click", (e) => {
+      if (e.target === taskModal) closeModal();
+    });
+
+    window.openEdit = openEdit;
+    window.toggleDone = toggleDone;
+    window.deleteTask = deleteTask;
+
+    renderAll();
   </script>
 </body>
 </html>
