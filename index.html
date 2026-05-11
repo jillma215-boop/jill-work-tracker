@@ -506,6 +506,108 @@
   </div>
 
   <script>
+    function exportCSV() {
+  if (!tasks.length) {
+    alert("データがありません");
+    return;
+  }
+
+  const headers = [
+    "日付",
+    "分類",
+    "タイトル",
+    "状態",
+    "優先度",
+    "予定",
+    "実績",
+    "次アクション"
+  ];
+
+  const rows = tasks.map(task => [
+    task.date || "",
+    getLabel(categories, task.category),
+    task.title || "",
+    getLabel(statuses, task.status),
+    getLabel(priorities, task.priority),
+    task.plan || "",
+    task.actual || "",
+    task.next || ""
+  ]);
+
+  const csv = [headers, ...rows]
+    .map(row =>
+      row
+        .map(value => `"${String(value).replace(/"/g, '""')}"`)
+        .join(",")
+    )
+    .join("\n");
+
+  const bom = "\uFEFF";
+  const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "work_tracker_export.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportJSON() {
+  if (!tasks.length) {
+    alert("データがありません");
+    return;
+  }
+
+  const blob = new Blob(
+    [JSON.stringify(tasks, null, 2)],
+    { type: "application/json;charset=utf-8;" }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "work_tracker_backup.json";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+
+      if (!Array.isArray(imported)) {
+        alert("JSON形式が正しくありません");
+        return;
+      }
+
+      const ok = confirm("現在のデータを置き換えますか？");
+      if (!ok) return;
+
+      tasks = imported;
+      saveTasks();
+      renderAll();
+      alert("データを導入しました");
+    } catch (error) {
+      alert("ファイルの読み込みに失敗しました");
+    } finally {
+      event.target.value = "";
+    }
+  };
+
+  reader.readAsText(file, "utf-8");
+}
     const STORAGE_KEY = "work_tracker_full_v2";
 
     const categories = [
