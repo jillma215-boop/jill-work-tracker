@@ -426,19 +426,24 @@
 
     <div class="panel">
       <div class="toolbar">
-        <input id="searchInput" placeholder="検索 / Search" />
-        <select id="categoryFilter">
-          <option value="all">全分類 / All Categories</option>
-        </select>
-        <select id="statusFilter">
-          <option value="all">全状態 / All Status</option>
-        </select>
-        <button class="btn-secondary" onclick="exportCSV()">CSV出力</button>
-        <button class="btn-secondary" onclick="exportJSON()">バックアップ</button>
-        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">導入</button>
-        <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
-        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
-      </div>
+  <div class="toolbar-row main-row">
+    <input id="searchInput" placeholder="検索 / Search" />
+    <select id="categoryFilter">
+      <option value="all">全分類 / All Categories</option>
+    </select>
+    <select id="statusFilter">
+      <option value="all">全状態 / All Status</option>
+    </select>
+    <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
+  </div>
+
+  <div class="toolbar-row sub-row">
+    <button class="btn-secondary" onclick="exportCSV()">CSV出力</button>
+    <button class="btn-secondary" onclick="exportJSON()">バックアップ</button>
+    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">導入</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
+  </div>
+</div>
 
       <div class="quick-filters">
         <button class="quick-pill active" data-view="today">今日優先 / Today Focus</button>
@@ -506,6 +511,7 @@
   </div>
 
   <script>
+    
     function exportCSV() {
   if (!tasks.length) {
     alert("データがありません");
