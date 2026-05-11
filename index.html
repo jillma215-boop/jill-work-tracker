@@ -428,6 +428,94 @@
         flex-direction: column;
       }
     }
+    .dashboard {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.dash-section {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+  padding: 18px;
+}
+
+.dash-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+}
+
+.category-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.category-bar {
+  height: 8px;
+  background: #edf2f1;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.category-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.priority-follow {
+  display: grid;
+  gap: 10px;
+}
+
+.follow-item {
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--primary);
+  border-radius: 16px;
+}
+
+.follow-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.follow-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+@media (max-width: 900px) {
+  .dash-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .category-row {
+    grid-template-columns: 1fr;
+  }
+}
   </style>
 </head>
 <body>
@@ -821,7 +909,7 @@ function importJSON(event) {
         });
     }
 
-    function renderStats() {
+    function renderStats() {   const total = tasks.length;   const today = tasks.filter(t => t.date === todayStr()).length;   const follow = tasks.filter(t => t.status === "follow").length;   const waiting = tasks.filter(t => t.status === "waiting").length;   const overdue = tasks.filter(isOverdue).length;    const statsData = [     { label: "今日 / Today", value: today },     { label: "要フォロー / Follow Up", value: follow },     { label: "先方待ち / Waiting", value: waiting },     { label: "遅延 / Overdue", value: overdue }   ];    stats.innerHTML = statsData.map(item => `     <div class="stat-card">       <div class="stat-label">${item.label}</div>       <div class="stat-value">${item.value}</div>     </div>   `).join("");    renderCategorySummary();   renderPriorityFollowList(); }
       const total = tasks.length;
       const done = tasks.filter(t => t.status === "done").length;
       const follow = tasks.filter(t => t.status === "follow").length;
@@ -885,7 +973,61 @@ function importJSON(event) {
     }
 
     function renderAll() {
-      renderStats();
+      renderStats();function renderCategorySummary() {
+  const el = document.getElementById("categorySummary");
+  if (!el) return;
+
+  const total = tasks.length || 1;
+
+  const rows = categories.map(category => {
+    const count = tasks.filter(t => t.category === category.value).length;
+    const percent = Math.round((count / total) * 100);
+
+    return `
+      <div class="category-row">
+        <div>${category.label}</div>
+        <div class="category-bar">
+          <div class="category-bar-fill" style="width:${percent}%"></div>
+        </div>
+        <div>${count}</div>
+      </div>
+    `;
+  });
+
+  el.innerHTML = rows.join("");
+}
+      function renderPriorityFollowList() {
+  const el = document.getElementById("priorityFollowList");
+  if (!el) return;
+
+  const list = tasks
+    .filter(t =>
+      t.status === "follow" ||
+      t.status === "waiting" ||
+      isOverdue(t)
+    )
+    .sort((a, b) => {
+      const priorityOrder = { p1: 3, p2: 2, p3: 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    })
+    .slice(0, 5);
+
+  if (!list.length) {
+    el.innerHTML = `<div class="empty">現在、重点フォローはありません。</div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(task => `
+    <div class="follow-item">
+      <div class="follow-title">${escapeHtml(task.title)}</div>
+      <div class="follow-meta">
+        ${escapeHtml(getLabel(categories, task.category))}
+        ／ ${escapeHtml(getLabel(statuses, task.status))}
+        ／ ${escapeHtml(task.next || "次アクション未設定")}
+      </div>
+    </div>
+  `).join("");
+}
       renderTasks();
       updateViewPills();
     }
