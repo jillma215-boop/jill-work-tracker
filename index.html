@@ -101,32 +101,14 @@
     }
 
     .toolbar {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 18px;
-}
+      grid-template-columns: 1.4fr 180px 180px 180px;
+      margin-bottom: 18px;
+    }
 
-.toolbar-row {
-  display: grid;
-  gap: 14px;
-}
-
-.main-row {
-  grid-template-columns: 1.4fr 180px 180px 200px;
-}
-
-.sub-row {
-  grid-template-columns: 1fr 1fr 1fr;
-  max-width: 700px;
-}
-
-    .stats,
-.dash-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 18px;
-}
+    .stats {
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 18px;
+    }
 
     .stat-card,
     .panel,
@@ -431,166 +413,6 @@
         flex-direction: column;
       }
     }
-    .dashboard {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.dash-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.dash-section {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--card-shadow);
-  padding: 18px;
-}
-
-.dash-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-sub);
-  margin-bottom: 12px;
-}
-
-.category-summary {
-  display: grid;
-  gap: 10px;
-}
-
-.category-row {
-  display: grid;
-  grid-template-columns: 160px 1fr 40px;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text-sub);
-}
-
-.category-bar {
-  height: 8px;
-  background: #edf2f1;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.category-bar-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 999px;
-}
-
-.priority-follow {
-  display: grid;
-  gap: 10px;
-}
-
-.follow-item {
-  padding: 12px 14px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--primary);
-  border-radius: 16px;
-}
-
-.follow-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.follow-meta {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-sub);
-}
-
-@media (max-width: 900px) {
-  .dash-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .category-row {
-    grid-template-columns: 1fr;
-  }
-}  
-.dashboard {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.dash-section {
-  background: var(--card);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--card-shadow);
-  padding: 18px;
-}
-
-.dash-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-sub);
-  margin-bottom: 12px;
-}
-
-.category-summary {
-  display: grid;
-  gap: 10px;
-}
-
-.category-row {
-  display: grid;
-  grid-template-columns: 180px 1fr 40px;
-  align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: var(--text-sub);
-}
-
-.category-bar {
-  height: 8px;
-  background: #edf2f1;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.category-bar-fill {
-  height: 100%;
-  background: var(--primary);
-  border-radius: 999px;
-}
-
-.priority-follow {
-  display: grid;
-  gap: 10px;
-}
-
-.follow-item {
-  padding: 12px 14px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-left: 4px solid var(--primary);
-  border-radius: 16px;
-}
-
-.follow-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.follow-meta {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-sub);
-}
   </style>
 </head>
 <body>
@@ -600,40 +422,19 @@
       <div class="subtitle">日々の業務を整理・追跡・フォロー </div>
     </div>
 
-    <div class="dashboard">
-  <div class="dash-grid" id="stats"></div>
-
-  <div class="dash-section">
-    <div class="dash-title">分類サマリー / Category Summary</div>
-    <div id="categorySummary" class="category-summary"></div>
-  </div>
-
-  <div class="dash-section">
-    <div class="dash-title">重点フォロー / Priority Follow-up</div>
-    <div id="priorityFollowList" class="priority-follow"></div>
-  </div>
-</div>
+    <div class="stats" id="stats"></div>
 
     <div class="panel">
       <div class="toolbar">
-  <div class="toolbar-row main-row">
-    <input id="searchInput" placeholder="検索 / Search" />
-    <select id="categoryFilter">
-      <option value="all">全分類 / All Categories</option>
-    </select>
-    <select id="statusFilter">
-      <option value="all">全状態 / All Status</option>
-    </select>
-    <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
-  </div>
-
-  <div class="toolbar-row sub-row">
-    <button class="btn-secondary" onclick="exportCSV()">CSV出力</button>
-    <button class="btn-secondary" onclick="exportJSON()">バックアップ</button>
-    <button class="btn-secondary" onclick="document.getElementById('importFile').click()">導入</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)" />
-  </div>
-</div>
+        <input id="searchInput" placeholder="検索 / Search" />
+        <select id="categoryFilter">
+          <option value="all">全分類 / All Categories</option>
+        </select>
+        <select id="statusFilter">
+          <option value="all">全状態 / All Status</option>
+        </select>
+        <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
+      </div>
 
       <div class="quick-filters">
         <button class="quick-pill active" data-view="today">今日優先 / Today Focus</button>
@@ -701,109 +502,6 @@
   </div>
 
   <script>
-    
-    function exportCSV() {
-  if (!tasks.length) {
-    alert("データがありません");
-    return;
-  }
-
-  const headers = [
-    "日付",
-    "分類",
-    "タイトル",
-    "状態",
-    "優先度",
-    "予定",
-    "実績",
-    "次アクション"
-  ];
-
-  const rows = tasks.map(task => [
-    task.date || "",
-    getLabel(categories, task.category),
-    task.title || "",
-    getLabel(statuses, task.status),
-    getLabel(priorities, task.priority),
-    task.plan || "",
-    task.actual || "",
-    task.next || ""
-  ]);
-
-  const csv = [headers, ...rows]
-    .map(row =>
-      row
-        .map(value => `"${String(value).replace(/"/g, '""')}"`)
-        .join(",")
-    )
-    .join("\n");
-
-  const bom = "\uFEFF";
-  const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "work_tracker_export.csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function exportJSON() {
-  if (!tasks.length) {
-    alert("データがありません");
-    return;
-  }
-
-  const blob = new Blob(
-    [JSON.stringify(tasks, null, 2)],
-    { type: "application/json;charset=utf-8;" }
-  );
-
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "work_tracker_backup.json";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-
-  reader.onload = function(e) {
-    try {
-      const imported = JSON.parse(e.target.result);
-
-      if (!Array.isArray(imported)) {
-        alert("JSON形式が正しくありません");
-        return;
-      }
-
-      const ok = confirm("現在のデータを置き換えますか？");
-      if (!ok) return;
-
-      tasks = imported;
-      saveTasks();
-      renderAll();
-      alert("データを導入しました");
-    } catch (error) {
-      alert("ファイルの読み込みに失敗しました");
-    } finally {
-      event.target.value = "";
-    }
-  };
-
-  reader.readAsText(file, "utf-8");
-}
     const STORAGE_KEY = "work_tracker_full_v2";
 
     const categories = [
@@ -985,28 +683,17 @@ function importJSON(event) {
     }
 
     function renderStats() {
-  const today = tasks.filter(t => t.date === todayStr()).length;
-  const follow = tasks.filter(t => t.status === "follow").length;
-  const waiting = tasks.filter(t => t.status === "waiting").length;
-  const overdue = tasks.filter(isOverdue).length;
+      const total = tasks.length;
+      const done = tasks.filter(t => t.status === "done").length;
+      const follow = tasks.filter(t => t.status === "follow").length;
+      const overdue = tasks.filter(isOverdue).length;
 
-  const statsData = [
-    { label: "今日 / Today", value: today },
-    { label: "要フォロー / Follow Up", value: follow },
-    { label: "先方待ち / Waiting", value: waiting },
-    { label: "遅延 / Overdue", value: overdue }
-  ];
-
-  stats.innerHTML = statsData.map(item => `
-    <div class="stat-card">
-      <div class="stat-label">${item.label}</div>
-      <div class="stat-value">${item.value}</div>
-    </div>
-  `).join("");
-
-  renderCategorySummary();
-  renderPriorityFollowList();
-}
+      const statsData = [
+        { label: "全件数 / Total", value: total },
+        { label: "完了 / Done", value: done },
+        { label: "要フォロー / Follow Up", value: follow },
+        { label: "遅延 / Overdue", value: overdue }
+      ];
 
       stats.innerHTML = statsData.map(item => `
         <div class="stat-card">
@@ -1059,61 +746,7 @@ function importJSON(event) {
     }
 
     function renderAll() {
-      renderStats();function renderCategorySummary() {
-  const el = document.getElementById("categorySummary");
-  if (!el) return;
-
-  const total = tasks.length || 1;
-
-  const rows = categories.map(category => {
-    const count = tasks.filter(t => t.category === category.value).length;
-    const percent = Math.round((count / total) * 100);
-
-    return `
-      <div class="category-row">
-        <div>${category.label}</div>
-        <div class="category-bar">
-          <div class="category-bar-fill" style="width:${percent}%"></div>
-        </div>
-        <div>${count}</div>
-      </div>
-    `;
-  });
-
-  el.innerHTML = rows.join("");
-}
-      function renderPriorityFollowList() {
-  const el = document.getElementById("priorityFollowList");
-  if (!el) return;
-
-  const list = tasks
-    .filter(t =>
-      t.status === "follow" ||
-      t.status === "waiting" ||
-      isOverdue(t)
-    )
-    .sort((a, b) => {
-      const priorityOrder = { p1: 3, p2: 2, p3: 1 };
-      return priorityOrder[b.priority] - priorityOrder[a.priority];
-    })
-    .slice(0, 5);
-
-  if (!list.length) {
-    el.innerHTML = `<div class="empty">現在、重点フォローはありません。</div>`;
-    return;
-  }
-
-  el.innerHTML = list.map(task => `
-    <div class="follow-item">
-      <div class="follow-title">${escapeHtml(task.title)}</div>
-      <div class="follow-meta">
-        ${escapeHtml(getLabel(categories, task.category))}
-        ／ ${escapeHtml(getLabel(statuses, task.status))}
-        ／ ${escapeHtml(task.next || "次アクション未設定")}
-      </div>
-    </div>
-  `).join("");
-}
+      renderStats();
       renderTasks();
       updateViewPills();
     }
