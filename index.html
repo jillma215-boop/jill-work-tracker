@@ -120,10 +120,13 @@
   max-width: 700px;
 }
 
-    .stats {
-      grid-template-columns: repeat(4, 1fr);
-      margin-bottom: 18px;
-    }
+    .stats,
+.dash-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
 
     .stat-card,
     .panel,
@@ -515,6 +518,78 @@
   .category-row {
     grid-template-columns: 1fr;
   }
+}  
+.dashboard {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.dash-section {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--card-shadow);
+  padding: 18px;
+}
+
+.dash-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+}
+
+.category-summary {
+  display: grid;
+  gap: 10px;
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 40px;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.category-bar {
+  height: 8px;
+  background: #edf2f1;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.category-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.priority-follow {
+  display: grid;
+  gap: 10px;
+}
+
+.follow-item {
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--primary);
+  border-radius: 16px;
+}
+
+.follow-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.follow-meta {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-sub);
 }
   </style>
 </head>
@@ -909,18 +984,29 @@ function importJSON(event) {
         });
     }
 
-    function renderStats() {   const total = tasks.length;   const today = tasks.filter(t => t.date === todayStr()).length;   const follow = tasks.filter(t => t.status === "follow").length;   const waiting = tasks.filter(t => t.status === "waiting").length;   const overdue = tasks.filter(isOverdue).length;    const statsData = [     { label: "今日 / Today", value: today },     { label: "要フォロー / Follow Up", value: follow },     { label: "先方待ち / Waiting", value: waiting },     { label: "遅延 / Overdue", value: overdue }   ];    stats.innerHTML = statsData.map(item => `     <div class="stat-card">       <div class="stat-label">${item.label}</div>       <div class="stat-value">${item.value}</div>     </div>   `).join("");    renderCategorySummary();   renderPriorityFollowList(); }
-      const total = tasks.length;
-      const done = tasks.filter(t => t.status === "done").length;
-      const follow = tasks.filter(t => t.status === "follow").length;
-      const overdue = tasks.filter(isOverdue).length;
+    function renderStats() {
+  const today = tasks.filter(t => t.date === todayStr()).length;
+  const follow = tasks.filter(t => t.status === "follow").length;
+  const waiting = tasks.filter(t => t.status === "waiting").length;
+  const overdue = tasks.filter(isOverdue).length;
 
-      const statsData = [
-        { label: "全件数 / Total", value: total },
-        { label: "完了 / Done", value: done },
-        { label: "要フォロー / Follow Up", value: follow },
-        { label: "遅延 / Overdue", value: overdue }
-      ];
+  const statsData = [
+    { label: "今日 / Today", value: today },
+    { label: "要フォロー / Follow Up", value: follow },
+    { label: "先方待ち / Waiting", value: waiting },
+    { label: "遅延 / Overdue", value: overdue }
+  ];
+
+  stats.innerHTML = statsData.map(item => `
+    <div class="stat-card">
+      <div class="stat-label">${item.label}</div>
+      <div class="stat-value">${item.value}</div>
+    </div>
+  `).join("");
+
+  renderCategorySummary();
+  renderPriorityFollowList();
+}
 
       stats.innerHTML = statsData.map(item => `
         <div class="stat-card">
