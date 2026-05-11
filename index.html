@@ -101,9 +101,24 @@
     }
 
     .toolbar {
-      grid-template-columns: 1.4fr 180px 180px 180px;
-      margin-bottom: 18px;
-    }
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.toolbar-row {
+  display: grid;
+  gap: 14px;
+}
+
+.main-row {
+  grid-template-columns: 1.4fr 180px 180px 200px;
+}
+
+.sub-row {
+  grid-template-columns: 1fr 1fr 1fr;
+  max-width: 700px;
+}
 
     .stats {
       grid-template-columns: repeat(4, 1fr);
