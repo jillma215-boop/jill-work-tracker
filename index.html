@@ -101,8 +101,14 @@
     }
 
     .toolbar {
-      grid-template-columns: 1.4fr 180px 180px 180px;
+      grid-template-columns: minmax(220px, 1.4fr) 180px 180px auto;
       margin-bottom: 18px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+      gap: 10px;
+      white-space: nowrap;
     }
 
     .stats {
@@ -409,6 +415,10 @@
         grid-template-columns: 1fr;
       }
 
+      .toolbar-actions {
+        flex-direction: column;
+      }
+
       .task-top {
         flex-direction: column;
       }
@@ -433,7 +443,10 @@
         <select id="statusFilter">
           <option value="all">全状態 / All Status</option>
         </select>
-        <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
+        <div class="toolbar-actions">
+          <button class="btn-secondary" id="downloadBtn">⇩ 全件ダウンロード / Download All</button>
+          <button class="btn-primary" id="newTaskBtn">＋ 追加 / Add</button>
+        </div>
       </div>
 
       <div class="quick-filters">
@@ -588,6 +601,46 @@
 
     function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function escapeCsv(value) {
+      const text = String(value ?? "");
+      return `"${text.replaceAll('"', '""')}"`;
+    }
+
+    function downloadAllTasks() {
+      const headers = [
+        "日付 / Date",
+        "分類 / Category",
+        "タイトル / Title",
+        "状態 / Status",
+        "優先度 / Priority",
+        "予定 / Plan",
+        "実績 / Actual",
+        "次アクション / Next"
+      ];
+      const rows = tasks.map(task => [
+        task.date || "",
+        getLabel(categories, task.category),
+        task.title || "",
+        getLabel(statuses, task.status),
+        getLabel(priorities, task.priority),
+        task.plan || "",
+        task.actual || "",
+        task.next || ""
+      ]);
+      const csv = [headers, ...rows]
+        .map(row => row.map(escapeCsv).join(","))
+        .join("\r\n");
+      const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `work-tracker-${todayStr()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
     }
 
     function fillSelect(selectEl, options, includeAll = false, allText = "All") {
@@ -852,6 +905,7 @@
     }
 
     document.getElementById("newTaskBtn").addEventListener("click", openNew);
+    document.getElementById("downloadBtn").addEventListener("click", downloadAllTasks);
     document.getElementById("cancelBtn").addEventListener("click", closeModal);
     document.getElementById("saveBtn").addEventListener("click", saveTask);
 
