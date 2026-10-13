@@ -517,7 +517,7 @@
       <div class="form-grid">
         <div><label class="section-label" for="taskDate">受付日</label><input type="date" id="taskDate" min="1000-01-01" max="9999-12-31"></div>
         <div><label class="section-label" for="taskCategory">業務分類</label><select id="taskCategory" required></select></div>
-        <div><label class="section-label" for="taskSubcategory">詳細分類</label><select id="taskSubcategory"></select></div>
+        <div><label class="section-label" for="taskSubcategory">詳細分類</label><select id="taskSubcategory" aria-describedby="subcategoryHelp"></select><p id="subcategoryHelp" class="muted" hidden></p></div>
         <div><label class="section-label" for="taskPriority">優先度</label><select id="taskPriority"></select></div>
         <div class="full"><label class="section-label" for="taskTitle">案件・事項</label><input id="taskTitle" required maxlength="500" placeholder="何についての対応ですか？"></div>
         <div><label class="section-label" for="taskStatus">現在の状態</label><select id="taskStatus"></select></div>

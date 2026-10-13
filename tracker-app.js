@@ -87,8 +87,27 @@
   function fillSubs(category, selected) {
     const found = C.categories.find(c => c.value === category);
     const subs = [...found.subs]; if (selected && !subs.includes(selected)) subs.push(selected);
-    options($('taskSubcategory'), subs.map(value => ({ value, label: value })));
+    options($('taskSubcategory'), subs.map(value => ({ value, label: found.subs.includes(value) ? value : `${value}（旧分類・保持中）` })));
     $('taskSubcategory').value = selected || subs[0];
+    showSubcategoryHelp();
+  }
+  function showSubcategoryHelp() {
+    const category = $('taskCategory').value;
+    const sub = $('taskSubcategory').value;
+    const descriptions = {
+      '施設・防災': '本社ビルの施設対応、防災訓練、消火器点検、施設利用ルールの整備・周知。ビル管理会社との連絡も、用件に応じて分類します。',
+      '社宅・寮': '社宅・寮の契約、入退居、修繕、費用、業者調整。出張者が利用する場合も、住居そのものの管理はこちら。個人の行程に合わせた宿泊手配は「出張者関連」へ。',
+      'カード・ロッカー・設備': '入館カードの発行・返却、ロッカーの割当・管理、社内設備の管理。ビルの施設・防災設備は「施設・防災」へ。',
+      '総務運営・改善': 'カレンダー制作、管理部の社内通知、管理フローの整理・改善。施設など特定の用件の通知は、その用件の分類へ。',
+      '臨時・部門間調整': '他の4分類に当てはまらない突発対応、他部署からの相談、管理部と現場の調整。用件が明確な場合は、その分類を選びます。'
+    };
+    const help = $('subcategoryHelp');
+    help.textContent = category === 'general'
+      ? (descriptions[sub] || '旧分類を保持しています。内容を確認して新しい分類に変更できます。変更せず保存した場合は元の分類が残ります。')
+      : category === 'travel' && sub === '宿泊手配'
+        ? '出張者の行程に合わせた予約、滞在日程、部屋の手配、入居案内。社宅・寮そのものの契約・修繕・費用管理は「本社施設・総務関連 → 社宅・寮」へ。'
+        : '';
+    help.hidden = !help.textContent;
   }
   function openTask(id) {
     const task = data.tasks.find(t => t.id === id); editingTask = task?.id || null;
@@ -132,6 +151,7 @@
   options($('taskCategory'), C.categories); options($('taskStatus'), C.statuses);
   options($('taskPriority'), C.priorities); options($('logStatus'), C.statuses);
   $('taskCategory').addEventListener('change', () => fillSubs($('taskCategory').value));
+  $('taskSubcategory').addEventListener('change', showSubcategoryHelp);
   $('newTaskBtn').addEventListener('click', () => openTask());
   document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.close).close()));
   $('taskForm').addEventListener('submit', event => {
